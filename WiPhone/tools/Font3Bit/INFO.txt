@@ -1,0 +1,29 @@
+# Copyright © 2019, 2020, 2021, 2022 HackEDA, Inc.
+
+# Licensed under the WiPhone Public License v.1.0 (the "License"); you
+# may not use this file except in compliance with the License. You may
+# obtain a copy of the License at
+# https://wiphone.io/WiPhone_Public_License_v1.0.txt.
+
+# Unless required by applicable law or agreed to in writing, software,
+# hardware or documentation distributed under the License is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language
+# governing permissions and limitations under the License.
+
+
+Creating smooth fonts
+=====================
+
+1. Run Processing IDE.
+2. Run the .pde script at:
+	WiPhone/src/TFT_eSPI/Tools/Create_Smooth_Font/Create_font/Create_font.pde
+3. Convert TrueType font to VLW font. (Edit the .pde as necessary.)
+4. Convert VLW font to 7SF font:
+    cd WiPhone/tools/Font3Bit/
+    python vlw_to_7sf.py FONT_NAME.vlw FONT_NAME.7sf
+5. Convert 7SF font to C array in a header file. (Add PROGMEM.) 
+    python to_c.py FONT_NAME.7sf
+
+(See MAKE_FONTS.sh)
+

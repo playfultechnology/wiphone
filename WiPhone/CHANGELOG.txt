@@ -1,0 +1,458 @@
+0.8.30:
+    Minor:
+    - calling now defaults to the ear speaker instead of the loudspeaker, and volume can be controlled during a call by pressing up/down arrows
+    - brightness correctly restored on boot
+    - manage SIP better when wifi disconnects or SIP server becomes inactive\
+    
+
+0.8.29:
+    Major:
+    - added UDP SIP. currently only selectable at compile time (in config.h). (Issue #79)
+    Minor:
+	- RC car directions (Issue #64).
+	- Added $ sign and other symbols to "*" key. Now "*" key supports these symbols: .,!?@$/+-=%^ _:;'*#) (Issue #95)
+	- Calling is not permitted when WiFi is not connected (Issue #69)
+	- Add popups for failed calls: no wifi conn, no sip conn, no sip uri (Issue #68 and #69)
+	- Fixed WiFiClient (tcp) connect call blocks the GUI. restored the connect timeout
+	- Fixed crash when unable to connect with tcp to the primary SIP server. Absence of virtual destructor of the base class Connection was causing this crash.
+	- Allow complete call termination even when the caller hangs up before callee responds. (Issue #38)
+	- UI doesn't freeze (ensureIpConnection() should not block.) (Issue #109)
+	- Add widget to allow switching between TCP and UDP SIP at run time. (Issue #79)
+	- Disable vibration after rejecting a received call using the End Call button. (Issue #96)
+	- Issue #11 ("sip:" in address book) Fixed.
+	- Fixed menu unreponsive while WiPhone tries to reconnect to a SIP server. 10s wait before attempting reconnect.
+    - Fixed: WiPhone crash when there is multiple multimedia descriptors 'm' in SDP message
+    - Detect if the other party is disconnects, then destroy the dialog and terminate the call
+    - Improve SIP Registering when WIFI is disconnected and reconnected
+    - Fixed crash on sending invite for an unregistered callee
+    - Handle error when trying to call a contact without sip info (Issue #68)
+    - Allow hang up even when not connected to WiFi. (Issue #69)
+	- Removed old board definitions, added #define for pogo pins and moved #define LORA_MESSAGING to Hardware.h. Partially Fixed. (Issue #66)
+	- Print SIP logs correctly, not one character per line.
+
+0.8.28:
+    Major:
+    - added headless tests
+    - added more tests to Diagnostics app
+    Minor:
+    - removed prints via Serial (prefer printf or log_x macros)
+    - some non-functional changes in older code after running auto-formatter
+
+0.8.27:
+    Minor:
+    - 0.8.26 was released onto production by accident so changing to 0.8.27
+
+0.8.26rc2:
+    Minor:
+     - Support for rc in version string
+     - Fix error in RTP packet header
+     - Add support for broadcast LoRa messages
+     - uart passthrough app
+     - Detect 6 digit hex number as LoRa address
+0.8.26:
+     Minor:
+     - add config file for code auto-formatter
+     - Minor cleanup related to production vs. development builds (what happens when the WIPHONE_PRODUCTION macro is defined)
+     - Rename Matrix and Pacman apps
+     - Add license
+     - Remove mp3 support along with mp3 player app
+     - Replace mp3 ringtone with pcm
+     - Replace RTPPacket
+
+0.8.25:
+      Minor:
+      - Rename Ota app
+      - Move LoRa into own class
+      - Fix bug with sending LoRa messages
+0.8.24:
+      Major:
+      - updated to latest version of SDK (1.0.5-rc4)
+      - support for OTA added
+      - LoRa messaging added
+      Minor:
+      - replace debug/serial.print wth log_d
+0.8.23:
+       Minor:
+       - modified Hardware.h to reduce popping noises in the speaker
+       - moved LED_BOARD config to make it work right (it was disabled for a while and didn't get checked after code updates in other areas)
+ 
+0.8.22:
+       Minor:
+       - undo erroneous deletion of icon (caused crash when entering phonebook)
+
+0.8.21:
+       Minor:
+        - disable the radio/do not scan when there is no selected SSID. this greatly extends the battery life when not connected because continuously scanning takes more power than a passive WiFi connection.
+        - redraw mic test screen on screen unlock
+        - added "Rear Mic" display to the Mic test app in anticipation of later showing that signal (currently shows front mic signal on both displays)
+        - automatically disable lock screen on incoming call
+        - during an incoming call, any key will unlock the screen
+        - re-enabled screen locking as the unlock screen now behaves better on incoming call
+        - fixed some memory leaks, added periodic memory debug info to logs
+        - preliminary test code for light sleep
+
+0.8.20:
+       Minor:
+        - added an almost blank app example (MyApp)
+        - modified the default home screen to look nicer when NTP is not available
+        - added STEAL_THE_USER_BUTTONS #define to switch between different meanings for the user buttons
+        - make slightly more sane defaults for where audio comes out of in various situations (call audio, ringtones, music playback)
+        - disabled screen lock because calls can't be accepted properly on unlock
+
+0.8.19:
+        Minor:
+        - added threaded app example (digital rain)
+        - added second level to Ackman
+
+0.8.18:
+        Minor:
+        - added Ackman game
+        - added modified library for the LED daughterboard (the one with 60 APA102 "neopixels")
+
+0.8.17:
+        Minor:
+        - dropping incoming audio packets when play queue is too full (fixes "train noise")
+        - CallApp changed to working with LCD directly (not via sprite)
+        - when starting a call, audio turned on *after* the last big screen update
+        - removed 1 tick wait time on unsuccessful i2s_write() - would happen every cycle at times
+        - main loop task priority raised to 9 (to allow more types of lower priority tasks)
+        - inlined playSample (25% performance increase)
+        - some changes to work with Arduino-ESP32 ver. 1.0.4 
+
+0.8.16:
+        Major:
+        - connections to NTP server separated into a dedicated thread
+
+0.8.15A: 
+        Minor:
+        - fixed: empty WiFi password could not be saved properly
+        - do not attempt to connect to 0.0.0.0 in TinySIP
+
+0.8.15:
+        Minor:
+        - disable code that mutes the ear speaker during calls
+        - increase default gains for all channels
+        - disabled screen lock by default and increased delay before screen dim and sleep
+        - added notes in the README on how to make releases
+        - fixed typo importing NanoINI.h and issue with older compilers and the Arduino abs() function
+
+0.8.14:
+        Major:
+        - added headphones interrupt
+        - switching between loudspeaker and headphones "manually" (works faster, but needs debouncing)
+        - ability to switch between loudspeaker and earspeaker
+        Minor:
+        - immediately turns off after booting if voltage is extremely low (<3.1V) 
+
+0.8.11
+        Minor:
+        - turning off on achieving low voltage (<3.3V) - avoids strange behavior
+
+0.8.10
+        Minor:
+        - no updates pushed to display when screen is sleeping (fixes music + lock bug)
+        - minor MusicPlayerApp optimizations and fixes
+
+0.8.9d
+        Minor:
+        - fixes: ScreenConfigApp bugs
+
+0.8.9c
+        Major:
+        - ScreenConfigApp mostly finished (negative values bug seen)
+
+0.8.9b
+        Minor:
+        - limited transmit power
+        - double debounce time
+        - changed keypad layout
+        - started the ScreenConfigApp and ChoiceWidget
+        - included config files and ringtone in the repo
+        - loudspeaker turned off for calls
+
+0.8.9a
+        Minor:
+        - lock icon
+
+0.8.9 (mid September 2019)
+        Major:
+        - screen dimming & screen lock 
+
+0.8.8b (mid September 2019)
+        Minor:
+        - storing and restoring Dialog context
+
+0.8.8a
+        Commit: cbb7f6f93f8c829d67336adc7ff1adbb385011fb
+        Minor:
+        - included the mp3_decoder into the repo
+
+0.8.8 (end of August 2019)
+        Commit: f6f60d46e29047ec967800bd172415946be01e12
+        Minor:
+        - partially implemented Dialog logic in TinySIP
+        - wallpaper image is loaded from file "background.jpg"
+        - a script to convert typical Exif JPG to JFIF JPG (for the wallpaper)
+        - removed waits in TinySIP
+
+0.8.7 (August 2019)
+        Commit: b5a0d431b43ab801157bc4e6e876574f9ee565d9
+        This is the closes version to the one sent for certification.
+        Major:
+        - messages more or less finished, there are still some bugs 
+
+0.8.6 (July 2019)
+        Major:
+        - messages partially implemented
+        - phonebook refactored to work through CriticalFile class (allowing bigger phonebooks and uploading)
+
+0.8.5 (30 June 2019)
+        Minor:
+        - diagnostics app improvements (keypad test, better pinging, MAC-address)
+
+0.8.4a (26 June 2019)
+        Minor:
+        - added ping to the diagnostics app
+
+0.8.4 (26 June 2019)
+        Commit: 7716fd49d44a3d2d486f6b6c71ab00935b1e563b
+        Major:
+        - mono audio fix: swapping neighbouring samples
+          (long-time sound quality issue, a.k.a the "drunken codec" and "robotic voice")
+        - DiagnosticsApp added
+        Minor:
+        - registering widgets mechanism
+        - improved ring buffer
+        - WiFi icon logic fix
+
+0.8.2 (21 June 2019)
+        Commit: d7b3b552df239d06cf3c00e341e42e90aaa3df69
+
+0.8.1 (20 June 2019)
+
+0.8.0 (first version sent out to early evaluators)
+
+-------------------------------- 
+
+Future:
+	Minor:
+	- fixed navigation bugs in MultilineTextWidget and MenuWidget
+0.6.9:
+	Major:
+	- moved most of storage (inner flash) logic to a dedicated class (except Notepad app)
+	- Phonebook storage logic refactoring: keeping the whole phonebook in PSRAM as a string
+	- LED board demo
+	Minor:
+	- "ago" time in list of messages
+	- fixed bug in EditNetworks inside NetworksApp
+	- freeHelper -> freeNull refactoring
+	- digital ON/OFF button test (commented out in main loop)
+0.6.6 (25 October 2018)
+	Minor:
+	- USD sender app
+	- Motor driver app
+	- fixed button widget (with simplified API)
+	- moved textWidth logic to SmoothFont class
+	- fixed bug in TextInputWidget's revealCursor
+	- immediate registration, increased REGISTER expiration
+	- fixed hanging up from CSipSimple
+	- fixed screen updates during call
+0.6.5 (19 October 2018):
+	Major:
+	- date/time logic rewrite: precise lag-free NTP-based clock
+	Minor:
+	- updated design of a few apps (Notepad, SIP accound, edit network)
+	- removed two old text input widgets
+	- removed the ugly monospaced font
+	- transitioning to Storage class (from Preferences)
+	- timing out terminated calls in TinySIP
+0.6.4:
+	Major:
+	- cleaner separation between processing events and redrawing screen (WindowedApp, single header & footer objects, drawing optimized)
+	- splash screen moved into separate app: connecting to WiFi and updating clock on boot up
+	Minor:
+	- clock changes: wifi icon, date (in the video), centering (not in the video)
+	- changed font in the Networks app (in the video)
+0.6.3:
+	Minor:
+	- PhonebookApp new look
+	- CallApp new look (except incoming)
+	- new widgets: MenuOptionPhonebook, RectIconWidget (headpic with changing background), OptionsMenuWidget
+	- MultilineTextWidget options
+	- mainboard version 2 pinout
+	- motor and LED test (as easter egg)
+	- configured the audio codec for 16000 Hz sample rate with 12 MHz crystal
+	- battery level showing after reboot
+0.6.2 (6 October 2018):
+	Minor:
+	- TextInputWidget implementation
+	- added paddings to MultilineTextWidget/TextInputWidget
+	- finished create new message layout
+0.6.1 (1 October 2018)
+	Minor:
+	- MultilineTextWidget implementation
+	- TFT_eSPI new methods (drawFitString, fitTextLength, fitWordsLength)
+	- refactoring (getHeight/getWidth to height/width in GUIWidget, textdatum cleanup in TFT_eSPI, new TextInputAbstract class)
+0.6.0 (28 September 2018)
+	Minor:
+	- MenuOption class for customizing menu items layout
+	- Messages app layout (icon added for creating messages)
+	- slight change in 3-bit icons generating tool
+0.5.9 (27 September 2018)
+	Minor:
+	- added loading JPEG with tjpgd library from ESP32's ROM
+0.5.8 (26 September 2018)
+	Minor:
+	- MenuWidget improvement
+	- started to implement MessagesApp
+	- organizing code into subfolders (src/VoIP, src/assets/, src/drivers)
+	- fonts mnemonic indexes
+0.5.7 (25 September 2018)
+	Minor:
+	- animated splash screen (implemented with 3-bit icons)
+	- NTP-based clock
+	- main screen with clock
+	- optimized header clock in main menu (pushSpritePart optimization)
+0.5.6 (20 September 2018)
+	Minor:
+	- icons capability for the MenuWidget
+	- (transparent) main menu with icons
+0.5.5 (19 September 2018)
+	Minor:
+	- smooth font transparency
+	- "smarter" MenuWidget
+0.5.4 (19 September 2018)
+	Minor:
+	- utilizing full-screen sprites for apps interface
+	- updated header and footer widgets
+0.5.3 (14 September 2018)
+	Minor:
+	- FontCollection class
+	- single logic for extender pins and GPIOs
+	- single CS pin for screen and SD card (TFT_CS_INVERSE in TFT_eSPI library)
+	- SD card test
+0.5.2 (11 September 2018)
+	Minor:
+	- support of partially transparent RLE3 images
+	- battery and WiFi icons (10 variants)
+0.5.1 (10 September 2018)
+	Minor:
+	- microphone test app
+	- RLE3 and I256 image rendering moved to TFT_eSPI
+	- (full) transparency added to RLE3 image format
+	- imroved rendering of optimized smooth 3-bit fonts
+	- TFT_eSPI fixes to fix inheritance
+	- icons file added
+0.5.0 (6 September 2018)
+	Minor:
+	- SmoothFont class
+	- pushing sprites into other sprites
+	- new GUI demo
+	- optimized fonts for our screen
+0.4.9 (4 September 2018)
+	Minor:
+	- added palette to the 7-Shade Fonts (7SF fonts)
+	- added eight Akrobat fonts
+	- added Font Demo app
+0.4.8 (31 August 2018)
+	Major:
+	- TFT_eSPI added 3-bit sprites
+	- TFT_eSPI added added 7SF smooth fonts (3-bit run-length encoded antialiased fonts) 
+	Minor:
+	- battery state of charge and USB connected
+0.4.7 (22 August 2018)
+	Minor:
+	- TFT_eSPI added support for external PSRAM (esp32Calloc)
+	- TFT_eSPI sprite cloning logic (cloneDataInto)
+	- image drawing demo (two formats: palleted 256-color image and 3-bit RLE)
+0.4.6 (15 August 2018)
+	Major:
+	- migrated to beautiful (non-monospaced) main font
+	Minor:
+	- amplifier enable
+	- audio test on F2 button
+	- Xark's startup screen
+0.4.5 (3 August 2018)
+	Major:
+	- MESSAGE request, sending messages
+	Minor:
+	- SPI_MODE3 seems to work better for our screen
+	- respContentType
+0.4.4 (1 August 2018)
+	Major:
+	- GPIO extender logic
+	- "qop" supported in SIP authentication
+	Minor: 
+	- WiPhone integrated pinout
+	- proxy IP removed from tinySIP parameters
+0.4.2 (19 July 2018)
+	Major:
+	- declining calls
+	- 7 out of 8 call scenarios checked (except for outgoing INIVE + CANCEL)
+	Minor:
+	- dynamic Call-ID 
+	- fixed route set logic
+	- dialog state in tinySIP
+	- collecting randomness from physical events
+0.4.0 (16 July 2018)
+	Major:
+	- accepting calls logic, interrupting current app on incoming calls
+	- persistent route set
+	- listening to multiple connections
+	Minor:
+	- separated CallApp from PhonebookApp
+	- "redraw all" parameter
+	- proper helper.cpp
+0.3.4 (11 July 2018)
+	Minor:
+	- processKey -> processEvent refactoring
+0.3.3 (11 July 2018)
+	Major:
+	- periodic REGISTERs and reconnects
+	Minor:
+	- audio test added
+0.3.2 (11 July 2018)
+	Major:
+	- persistent connection
+	- parsing requests
+	- REGISTER request
+	Minor:
+	- config.h
+	- elapsedMillis
+0.3.1 (9 July 2018)
+	Major:
+	- battery gauge & charging indicator
+	Refactoring:
+	- separate HARDWARE.h file for all pin assignments
+	Minor:
+	- started REGISTER request
+	- DNS test
+0.3.0 (4 July 2018)
+	Major: 
+	- WiFi network management from GUI
+	- timer (AnyEvent)
+	Minor: 
+	- 25-button keyboard
+	- bigger footer font size
+	- fixed keypad bug (refactoring)
+	- minor refactoring (pointers -> references), soft reboot
+0.2.0 (29 June 2018)
+	Major: 
+	- call state handling
+	- hanging up logic (BYE)
+	- better audio handling
+	Minor:
+	- correct LCD SPI speed, fixed all warnings, SDP session ID, dynamics handling in TinySIP, little refactoring 
+
+# Copyright © 2019, 2020, 2021, 2022 HackEDA, Inc.
+
+# Licensed under the WiPhone Public License v.1.0 (the "License"); you
+# may not use this file except in compliance with the License. You may
+# obtain a copy of the License at
+# https://wiphone.io/WiPhone_Public_License_v1.0.txt.
+
+# Unless required by applicable law or agreed to in writing, software,
+# hardware or documentation distributed under the License is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language
+# governing permissions and limitations under the License.

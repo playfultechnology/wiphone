@@ -1,0 +1,204 @@
+== NVS: Non-Volatile Storage ==
+URL:
+    https://esp-idf.readthedocs.io/en/latest/api-reference/storage/nvs_flash.html
+    https://github.com/espressif/esp-idf/tree/master/components/nvs_flash
+DEVELOPER NOTES:
+    NVS:
+	maximal length of the key guaranteed to be at least 15 characters
+	maximum length of the value for strings (including null character) is 1984 bytes
+            NOTE: according to new documentation - 4000 bytes including nul-terminator.
+
+=== Usage example ===
+flash->end();
+flash->begin(sPageName, bReadOnly)
+flash->getString(sVarName, appNoteStringDyn, NotepadApp::maxNotepadSize)
+if (flash->putString(sVarName, sString)>0) succ = true;
+addrMaxId = flash->getUShort("max",  uDefalt);
+flash->remove(sVarName);
+flash->end();
+
+== NanoINI.h ==
+- very simple INI file format interface
+- very simple rules:
+    - no spaces around key names
+    - LF (\n) character is not allowed in values; \r can be used instead
+
+== WiPhone storage ==
+=== General config ===
+"/configs.ini" via CriticalFile interface:
+    desc=WiPhone config file
+    v=1
+    [audio]
+    headphones_vol=-12
+    speaker_vol=-12
+    #music_vol=-12
+    #ringtone_vol=-12
+    #call_vol=-12
+    [time]
+    zone=12.75              <-- this is offset in hours, floating point
+    [screen]
+    bright_level=100
+    dimming=1               <-- boolean
+    dim_level=15            <-- if dim_level >= bright_level: dimming is OFF
+    dim_after_s=20          <-- if dim_after_s >= sleep_after_s OR dim_after_s <= 0: dimming is OFF
+    sleeping=1              <-- boolean
+    sleep_after_s=30        <-- if sleep_after_s <= 0: screen sleep is OFF
+    [lock]
+    lock_keyboard=1         <-- boolean; do we need to lock screen on sleep?
+
+=== Notepad app ===
+TODO: move to SPIFFS
+NVS:
+    NVS Page: "notepad"
+        Entry name: "note"
+
+NanoINI:
+[notepad]
+note=..... (using \r instead of \n)
+
+=== Phonebook ==
+Version 0:
+    NVS:
+        NVS Page: "addr"
+            Entry name: "max" - highest entry number
+            Entry names: "1", "2", ... (sprintf(addrId, "%d", key);)
+                Format of each entry:
+    	        "name=<NAME>\nsip=<SIP_URI>\n"
+
+Version 1:
+    NVS:
+        NVS Page: "addr"
+            Entry name "max" - always 1
+            Entry name "backend" - 0 (NVS_BACKEND), 1 (SPIFFS_BACKEND), 2 (SD_BACKEND)
+            Entry name "1": a single string of the format
+                n=<NAME1>
+                s=<SIP URI OR PHONE NUMBER 1>
+
+                n=<NAME2>
+                s=<SIP URI OR PHONE NUMBER 2>
+
+
+Version 2:
+    "/phonebook.ini" via CriticalFile interface:
+        desc=WiPhone phonebook
+        v=2
+        [1]
+        n=<NAME>
+        s=<SIP URI or PHONE NUMBER>
+
+=== WiFi Networks ===
+==== Old method ====
+NVS:
+    NVS Page: "wifi"
+        Entry name: "pref"	- preferred SSID
+        Entry name: "list"	- list of known networks
+	    Format:
+                "ssid1\nssid2\n..."
+ TODO: allow bigger list of networks than 2KB
+ TODO: move to SPIFFS
+    
+    NVS Page: "wifin"
+        Entry names: <SSID>[:15]
+	    Format of each entry:
+                "ssid=<SSID>\npass=<PASS>\n..."
+
+==== New method ====
+"/networks.ini" via CriticalFile interface:
+    desc=WiPhone WiFi networks
+    v=1
+    [1]
+    s=<SSID>
+    p=<PASSWORD>
+    m=<anything; optional key to mark the preferred network>
+    [2]
+    ...
+
+NOTE: 
+- we are intentionally not using SSID as section title in INI format to allow different networks
+  with same name.
+
+=== SIP Account ===
+==== Old method ====
+NVS:
+    NVS Page: "sip"
+        Entry name: "fromName" - str
+        Entry name: "fromUser" - str
+        Entry name: "fromUri" - str
+        Entry name: "proxyPass" - str
+
+==== New method ====
+"/sip_accounts.ini" via CriticalFile interface:
+    desc=WiPhone SIP accounts
+    v=1
+    [1]
+    d=<Display Name>
+    s=<SIP URI>
+    p=<Password>
+    m=<Main (if key is present); optional>
+    [2]
+    ...
+
+=== UDP Sender App ===
+NVS:
+    NVS Page: "app_udp_send"
+        Entry name: "ip" - str
+        Entry name: "text" - str
+        Entry name: "port" - int 
+
+== Messages ==
+"/msg_index.ini"
+    desc=WiPhone messages index
+    v=<no version this is a general guideline for specifying partitions>
+    x=<NEXT_PARTITION_NUM; integer - next partition number to be assigned; optional; if absent - find maximum among p, assign p+1>
+    u=<NUMBER OF UNREAD>
+    [1]
+    p=<PARTITION_NUM; integer>         // such that messages are stored in `msg_%05d.ini` % PARTITION_NUM
+    t1=<UNIX_TIMESTAMP, hex 32-bit integer>
+    t2=<UNIX_TIMESTAMP, hex 32-bit integer>
+    d=<i OR o>                              // optional; set to `i` if incoming; set to `o` if outgoing, `io` - both
+    s=<SIP_URI_SELF; optional - own address, messages are only received and/or sent by this address>
+    o=<SIP_URI_OTHER; optional - counterpart address, that is messages are sent and/or received only to and/or from this address>
+    n=<number of messages in the partition; == total number of sections minus 1>
+        nn=<number of undelivered messages waiting for retries>
+    u=<NUMBER OF UNREAD>
+    [2]
+    p=<FILENAME>
+    ...
+
+"/msg_00001.ini"
+    desc=WiPhone messages partition
+    v=1
+    p=<PARTITION_NUM; integer; optional - the idea is for easier restoring>
+    t1=        // These fields duplicate information from msg_index
+    t2=
+    d=
+    s=
+    o=
+        nn=<NUMBER OF UNDELIVERED MESSAGES waiting for retries>
+    u=<NUMBER OF UNREAD>
+    [1]
+    s=<SIP_URI_SELF; if not set for the partition>
+    o=<SIP_URI_OTHER; if not set for the partition>
+    b=<BASE64 of the message in **one line**>
+    m=<or TEXT, if `b` is not present>
+    h=<HEX_OF_32-BIT_HASH; optional?; the exact algorithm is MurmurHash3_32 with 5381 seed>
+    d=<i OR o; optional, section 0 `d` is `io`>
+    t=<SENT_TIME/RECEIVED_TIME, message creation time; hex integer>
+        a=<ACKNOWLEDGE_TIME; acknowledge sent/received time>
+        f=<LAST TIME OF SENDING ATTEMPT>
+        z=<DELIVERED TIME; for outgoing messages; this is different from acknowledge time by absense of any response>
+        nf=<NUMBER OF RETRIES SO FAR>
+        nz=<NUMBER OF DELIVERIES; we should not send lots of retries after the first "delivery">
+    u=<UNREAD, optional flag>
+    [p=<PARTITION_NUM> - used only in MessagesArray]
+
+Version 1:
+    Partitions are divided into incoming (`i`) and outgoing (`o`)
+    For 1000 partitions: index file is around 41KB.
+    For 100 messages: partition file is around 28KB (if we include both URIs).
+
+Version 2:
+    Partitions are split by other URI (`o`).
+    For 1000 partitions: index file is around 69KB (if we don't include own URI).
+    For 100 messages: partition file is around 21KB.
+

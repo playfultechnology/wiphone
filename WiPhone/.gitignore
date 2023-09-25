@@ -1,0 +1,7 @@
+*.7sf
+*.vlw
+*.pyc
+.DS_store
+tools/RLE3_icons/*.h
+tools/RLE3_icons/*.rle3
+tools/Font3Bit/*.h
